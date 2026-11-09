@@ -1,0 +1,133 @@
+
+<div class="page-container">
+
+  <!-- HEADER -->
+  <div class="page-header">
+
+    <div>
+      <h2>Employee Management</h2>
+      <p>Manage and view all your employees</p>
+    </div>
+
+    <a routerLink="/create" class="create-btn">
+      + Add Employee
+    </a>
+
+  </div>
+
+  <!-- MAIN CARD -->
+  <div class="content-card">
+
+    <!-- SEARCH TOOLBAR -->
+    <div class="toolbar">
+
+      <div class="search-wrapper">
+
+        <span class="search-icon">⌕</span>
+
+        <input
+          type="text"
+          placeholder="Search by ID, Name, Email or Department..."
+          [(ngModel)]="searchText"
+          class="search-box"
+        />
+
+      </div>
+
+      <div class="employee-count">
+        Total Employees:
+        <strong>{{ employees.length }}</strong>
+      </div>
+
+    </div>
+
+    <!-- EMPLOYEE TABLE -->
+    <div class="table-container">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Employee Name</th>
+            <th>Email Address</th>
+            <th>Department</th>
+            <th>Salary</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr *ngFor="let emp of filteredEmployees">
+
+            <td class="employee-id">
+              #{{ emp.employeeId }}
+            </td>
+
+            <td class="employee-name">
+              {{ emp.employeeName }}
+            </td>
+
+            <td>
+              {{ emp.email }}
+            </td>
+
+            <td>
+              <span class="department-badge">
+                {{ emp.department }}
+              </span>
+            </td>
+
+            <td class="salary">
+              {{ emp.salary | number:'1.0-0' }}
+            </td>
+
+            <td>
+
+              <div class="action-buttons">
+
+                <a
+                  [routerLink]="['/update', emp.employeeId]"
+                  class="edit-btn">
+                  Edit
+                </a>
+
+                <button
+                  class="delete-btn"
+                  (click)="deleteEmployee(emp.employeeId!)">
+                  Delete
+                </button>
+
+              </div>
+
+            </td>
+
+          </tr>
+
+          <!-- NO RECORD FOUND -->
+          <tr *ngIf="filteredEmployees.length === 0">
+
+            <td colspan="6" class="no-data">
+              No employees found.
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="table-footer">
+
+      Showing {{ filteredEmployees.length }} of
+      {{ employees.length }} employees
+
+    </div>
+
+  </div>
+
+</div>
