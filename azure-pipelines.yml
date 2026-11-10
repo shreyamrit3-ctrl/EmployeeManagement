@@ -17,18 +17,21 @@ steps:
 - checkout: self
   clean: true
 
-- task: UseDotNet@2
-  displayName: 'Install .NET 10 SDK'
-  inputs:
-    packageType: 'sdk'
-    version: '10.x'
+# Step 1: Verify installed .NET SDK
+- powershell: |
+    Write-Host "Checking installed .NET SDK..."
+    dotnet --version
+    dotnet --list-sdks
+  displayName: 'Verify Installed .NET SDK'
 
+# Step 2: Restore NuGet packages
 - task: DotNetCoreCLI@2
   displayName: 'Restore NuGet Packages'
   inputs:
     command: 'restore'
     projects: 'EmployeeAPI/EmployeeAPI.csproj'
 
+# Step 3: Build API
 - task: DotNetCoreCLI@2
   displayName: 'Build Employee API'
   inputs:
@@ -36,6 +39,7 @@ steps:
     projects: 'EmployeeAPI/EmployeeAPI.csproj'
     arguments: '--configuration $(buildConfiguration) --no-restore'
 
+# Step 4: Publish API
 - task: DotNetCoreCLI@2
   displayName: 'Publish Employee API'
   inputs:
@@ -45,10 +49,11 @@ steps:
     arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/publish'
     zipAfterPublish: true
 
+# Step 5: Deploy API to Azure App Service
 - task: AzureWebApp@1
   displayName: 'Deploy Employee API to Azure'
   inputs:
     azureSubscription: 'EmployeeManagement-ServiceConnection'
     appType: 'webApp'
     appName: 'employee-management-api'
-    package: '$(Build.ArtifactStagingDirectory)/publish/EmployeeAPI.zip'
+    package: '$(Build.ArtifactStagingDirectory)/publish/**/*.zip'
