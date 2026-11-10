@@ -14,6 +14,9 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
+- checkout: self
+  clean: true
+
 - task: UseDotNet@2
   displayName: 'Install .NET 10 SDK'
   inputs:
@@ -48,4 +51,4 @@ steps:
     azureSubscription: 'EmployeeManagement-ServiceConnection'
     appType: 'webApp'
     appName: 'employee-management-api'
-    package: '$(Build.ArtifactStagingDirectory)/publish/**/*.zip'
+    package: '$(Build.ArtifactStagingDirectory)/publish/EmployeeAPI.zip'
