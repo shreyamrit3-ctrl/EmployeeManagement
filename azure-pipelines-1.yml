@@ -1,0 +1,54 @@
+
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - EmployeeUI/**
+
+pool:
+  name: Default
+
+steps:
+
+# 1. Checkout GitHub repository
+- checkout: self
+  clean: true
+
+# 2. Install Node.js 22
+- task: NodeTool@0
+  displayName: 'Install Node.js 22'
+  inputs:
+    versionSpec: '22.x'
+
+# 3. Install Angular dependencies
+- script: npm install
+  displayName: 'Install Angular Dependencies'
+  workingDirectory: '$(Build.SourcesDirectory)/EmployeeUI'
+
+# 4. Build Angular application
+- script: npm run build -- --configuration production
+  displayName: 'Build Angular Application'
+  workingDirectory: '$(Build.SourcesDirectory)/EmployeeUI'
+
+# 5. Archive Angular production files
+- task: ArchiveFiles@2
+  displayName: 'Archive Angular UI'
+  inputs:
+    rootFolderOrFile: '$(Build.SourcesDirectory)/EmployeeUI/dist/EmployeeUI/browser'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/angular-ui.zip'
+    replaceExistingArchive: true
+
+# 6. Deploy to Azure Linux App Service
+- task: AzureWebApp@1
+  displayName: 'Deploy Angular UI to Azure'
+  inputs:
+    azureSubscription: 'EmployeeManagement-ServiceConnection'
+    appType: 'webAppLinux'
+    appName: 'employee-management-ui'
+    package: '$(Build.ArtifactStagingDirectory)/angular-ui.zip'
+    runtimeStack: 'NODE|22-lts'
+    startUpCommand: 'pm2 serve /home/site/wwwroot --no-daemon --spa'
