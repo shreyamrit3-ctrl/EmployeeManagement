@@ -22,13 +22,26 @@ builder.Services.AddDbContext<EmployeeDbContext>(options =>
 builder.Services.AddScoped<IEmployeeService, EmployeeRepository>();
 
 // CORS for Angular
-builder.Services.AddCors(options =>
+/*builder.Services.AddCors(options =>
 {
     options.AddPolicy("AngularPolicy", policy =>
     {
         policy.WithOrigins("http://localhost:4200")
               .AllowAnyHeader()
               .AllowAnyMethod();
+    });
+});*/
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AngularPolicy", policy =>
+    {
+        policy.WithOrigins(
+            "http://localhost:4200",
+            "https://employee-management-ui-d6dyhncyh5ftcqhw.westus3-01.azurewebsites.net"
+        )
+        .AllowAnyHeader()
+        .AllowAnyMethod();
     });
 });
 
